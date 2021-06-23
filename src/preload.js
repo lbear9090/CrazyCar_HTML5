@@ -30,18 +30,18 @@ var Preload = {
     start: function() {
         cnt_files = 0;
         this.loadImage("background",		        EngagedNation.Config.Game.img_background);
-        this.loadImage("img_coin",			        EngagedNation.Config.Game.img_coin, true, 36, 36, 6);
+        this.loadImage("coin",			        EngagedNation.Config.Game.img_coin, true, 36, 36, 6);
         this.loadImage("framescore",		        EngagedNation.Config.Game.img_framescore);
         this.loadImage("framestars",		        EngagedNation.Config.Game.img_framestars);
         this.loadImage("oil_slick",		            EngagedNation.Config.Game.img_oil_slick);
         this.loadImage("playercar_red",			    EngagedNation.Config.Game.img_playercar_red, true, 172, 73, 3);
         this.loadImage("btn_sound",			        EngagedNation.Config.Game.img_soundbtn, true, 114, 120, 2);
         this.loadImage("touchtostart",		        EngagedNation.Config.Game.img_touchtostart);
-        this.loadImage("img_traffic_car_1",			EngagedNation.Config.Game.img_traffic_car_1, true, 167, 67, 3);
-        this.loadImage("img_traffic_car_2",			EngagedNation.Config.Game.img_traffic_car_2, true, 165, 65, 3);
-        this.loadImage("img_traffic_car_3",			EngagedNation.Config.Game.img_traffic_car_3, true, 150, 67, 3);
-        this.loadImage("img_traffic_car_4",			EngagedNation.Config.Game.img_traffic_car_4, true, 166, 67, 3);
-        this.loadImage("img_traffic_car_5",			EngagedNation.Config.Game.img_traffic_car_5, true, 165, 71, 3);
+        this.loadImage("traffic_car_1",			EngagedNation.Config.Game.img_traffic_car_1, true, 167, 67, 3);
+        this.loadImage("traffic_car_2",			EngagedNation.Config.Game.img_traffic_car_2, true, 165, 65, 3);
+        this.loadImage("traffic_car_3",			EngagedNation.Config.Game.img_traffic_car_3, true, 150, 67, 3);
+        this.loadImage("traffic_car_4",			EngagedNation.Config.Game.img_traffic_car_4, true, 166, 67, 3);
+        this.loadImage("traffic_car_5",			EngagedNation.Config.Game.img_traffic_car_5, true, 165, 71, 3);
 
         var aSoundsInfo = [];
         aSoundsInfo.push({filename: EngagedNation.Config.Game.audio_button,		loop: false, volume: 1, ingamename: "audio_button"});

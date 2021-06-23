@@ -4,11 +4,6 @@ var GAMEPLAY_GAMEOVER = 2;
 
 var GamePlay = {
     game: controller.game,
-    cnt_darts: 0,
-    score: 0,
-    ringScores: [],
-    direct_x: -1,
-    direct_y: -1,
     status: GAMEPLAY_STATUS_CROSSHAIR,
 
     init: function() {
@@ -24,6 +19,7 @@ var GamePlay = {
     create: function() {
         // create ui
         this.createUI();
+        this.count = 0;
     },
 
     createUI: function() {
@@ -31,14 +27,32 @@ var GamePlay = {
         this.group = this.game.add.group();
         
         // bg
-        var bg = newSprite('background',  0, -1080, 0, 0, 1, this.group, this.game);
-        // bg.inputEnabled = true;
-        // bg.input.priorityID = 0;
-        // bg.events.onInputDown.add(this.onTap, this);
+        this.bg1 = newSprite('background',  0, CANVAS_HEIGHT, 0, 1, 1, this.group, this.game);
+        this.bg2 = newSprite('background',  this.bg1.width, CANVAS_HEIGHT, 0, 1, 1, this.group, this.game);
+        this.bg1.inputEnabled = true;
+        this.bg1.input.priorityID = 0;
+        this.bg1.events.onInputDown.add(this.onTap, this);
 
-        // if (this.game.device.touch)
-        //     this.game.input.mouse.stop();
+        this.bg2.inputEnabled = true;
+        this.bg2.input.priorityID = 0;
+        this.bg2.events.onInputDown.add(this.onTap, this);
 
+        if (this.game.device.touch)
+            this.game.input.mouse.stop();
+
+        newSprite('framestars', 10, 10, 0, 0, 1, this.group, this.game);
+        newSprite('framescore', CANVAS_WIDTH/2, 10, 0.5, 0, 1, this.group, this.game);
+        
+        this.isSoundOn = readGameData('sound', 1);
+        if (this.isSoundOn == 0) {
+            this.btnSound = newButton('btn_sound', 1800, 10, 0.5, 0, 5, this.onClickSound, this, this.group, this.game, false, null, 1, 1, 0);
+        } else {
+            this.btnSound = newButton('btn_sound', 1800, 10, 0.5, 0, 5, this.onClickSound, this, this.group, this.game, false, null, 0, 0, 1);
+        }
+
+        this.player = new Player(400, 800, this.group, this.game, this.onDartFinished, this);
+
+        this.createOpponent();
         // header
         // var sprHeader = newSprite('header', 0, 15, 0, 0, 1, this.group, this.game);
         // newLabel(EngagedNation.Config.Game.text_score, 40, 'Arial', 'black', 196, 40, 0.5, 0.5, 1, this.group, this.game, false, true, sprHeader);
@@ -53,12 +67,7 @@ var GamePlay = {
         //     sprHeader.visible = false;
         // }
 
-        // this.isSoundOn = readGameData('sound', 1);
-        // if (this.isSoundOn == 0) {
-        //     this.btnSound = newButton('btn_audio', 1230, 50, 0.5, 0.5, 5, this.onClickSound, this, this.group, this.game, false, null, 1, 1, 0);
-        // } else {
-        //     this.btnSound = newButton('btn_audio', 1230, 50, 0.5, 0.5, 5, this.onClickSound, this, this.group, this.game, false, null, 0, 0, 1);
-        // }
+        
         // this.btnHelp = newButton('btn_help', 1140, 50, 0.5, 0.5, 5, this.onClickHelp, this, this.group, this.game, false, null, 0, 0, 1);
         // // target
         // this.sprTarget = newSprite('dashboard', 640, 360, 0.5, 0.5, 1, this.group, this.game);
@@ -98,59 +107,36 @@ var GamePlay = {
         this.dlgInstruction.visible = false;
     },  
 
-    showRingScoreValues: function() {
-        this.ringScores[0] = EngagedNation.Config.Game.gameplay_ring_j_score;
-        this.ringScores[1] = EngagedNation.Config.Game.gameplay_ring_i_score;
-        this.ringScores[2] = EngagedNation.Config.Game.gameplay_ring_h_score;
-        this.ringScores[3] = EngagedNation.Config.Game.gameplay_ring_g_score;
-        this.ringScores[4] = EngagedNation.Config.Game.gameplay_ring_f_score;
-        this.ringScores[5] = EngagedNation.Config.Game.gameplay_ring_e_score;
-        this.ringScores[6] = EngagedNation.Config.Game.gameplay_ring_d_score;
-        this.ringScores[7] = EngagedNation.Config.Game.gameplay_ring_c_score;
-        this.ringScores[8] = EngagedNation.Config.Game.gameplay_ring_b_score;
-        this.ringScores[9] = EngagedNation.Config.Game.gameplay_ring_a_score;
-        
-        for (var i = 1 ; i < 10 ; i++) {
-            if (EngagedNation.Config.Game.gameplay_horizontal_score_display) {
-                newLabel(this.ringScores[i].toString(), 20, 'Arial', i % 2 == 0 ? 'black' : 'white', 260-i*23, 269, 0.5, 0.5, 3, this.group, this.game, false, true, this.sprTarget);
-                newLabel(this.ringScores[i].toString(), 20, 'Arial', i % 2 == 0 ? 'black' : 'white', 260+i*23, 269, 0.5, 0.5, 3, this.group, this.game, false, true, this.sprTarget);
-            }
-            if (EngagedNation.Config.Game.gameplay_vertical_score_display) {
-                newLabel(this.ringScores[i].toString(), 20, 'Arial', i % 2 == 0 ? 'black' : 'white', 260, 269-i*23, 0.5, 0.5, 3, this.group, this.game, false, true, this.sprTarget);
-                newLabel(this.ringScores[i].toString(), 20, 'Arial', i % 2 == 0 ? 'black' : 'white', 260, 269+i*23, 0.5, 0.5, 3, this.group, this.game, false, true, this.sprTarget);
-            }
-        }
-    },
-
     sort: function() {
         this.group.sort('z_order', Phaser.Group.SORT_ASCENDING);
     },
     
     onTap: function() {
-        if ( this.dlgInstruction.visible ) return;
-        if (this.cnt_darts == 0 || this.status !== GAMEPLAY_STATUS_CROSSHAIR) return;
+        this.player.jump();
+        // if ( this.dlgInstruction.visible ) return;
+        // if (this.cnt_darts == 0 || this.status !== GAMEPLAY_STATUS_CROSSHAIR) return;
 
-        if (this.sprCrossHair.takeValue()) {
-            var temp = this.sprCrossHair.getValue();
+        // if (this.sprCrossHair.takeValue()) {
+        //     var temp = this.sprCrossHair.getValue();
 
-            var x = temp.x,
-                y = temp.y;
+        //     var x = temp.x,
+        //         y = temp.y;
 
-            this.direct_x = Math.round(x);
-            this.direct_y = Math.round(y);
-            if (EngagedNation.Config.Game.gameplay_always_win_mode) {
-                var len = Math.sqrt(x*x + y*y);
-                if (len >= 9.5) {
-                    x = x/len*9.4;
-                    y = y/len*9.4;
-                    this.direct_x = Math.round(x);
-                    this.direct_y = Math.round(y);
-                }
-            }
+        //     this.direct_x = Math.round(x);
+        //     this.direct_y = Math.round(y);
+        //     if (EngagedNation.Config.Game.gameplay_always_win_mode) {
+        //         var len = Math.sqrt(x*x + y*y);
+        //         if (len >= 9.5) {
+        //             x = x/len*9.4;
+        //             y = y/len*9.4;
+        //             this.direct_x = Math.round(x);
+        //             this.direct_y = Math.round(y);
+        //         }
+        //     }
             
-            this.setStatus(GAMEPLAY_STATUS_DART);
-            new Dart(CANVAS_WIDTH/2+x*TARGET_WIDTH/20, CANVAS_HEIGHT/2-y*TARGET_HEIGHT/20, this.group, this.game, this.onDartFinished, this);
-        }
+        //     this.setStatus(GAMEPLAY_STATUS_DART);
+        //     new Dart(CANVAS_WIDTH/2+x*TARGET_WIDTH/20, CANVAS_HEIGHT/2-y*TARGET_HEIGHT/20, this.group, this.game, this.onDartFinished, this);
+        // }
     },
     
     addScore: function(score) {
@@ -167,16 +153,24 @@ var GamePlay = {
     },
 
     onDartFinished: function() {
-        var score = Math.round(Math.sqrt(this.direct_x*this.direct_x+this.direct_y*this.direct_y));
-        score = score < 10 ? this.ringScores[score] : 0;
-        this.addScore(score);
-        this.sort();
+        // var score = Math.round(Math.sqrt(this.direct_x*this.direct_x+this.direct_y*this.direct_y));
+        // score = score < 10 ? this.ringScores[score] : 0;
+        // this.addScore(score);
+        // this.sort();
 
-        if (this.removeDarts()) {
-            this.setStatus(GAMEPLAY_GAMEOVER);
-            return;
-        }
-        this.setStatus(GAMEPLAY_STATUS_CROSSHAIR);
+        // if (this.removeDarts()) {
+        //     this.setStatus(GAMEPLAY_GAMEOVER);
+        //     return;
+        // }
+        // this.setStatus(GAMEPLAY_STATUS_CROSSHAIR);
+    },
+
+    createOpponent: function(){
+        this.opponent = new Opponent(CANVAS_WIDTH + 200, 800, this.group, this.game, this.onDartFinished, this);
+    },
+
+    createCoins: function(){
+
     },
 
     setStatus: function(status)     {
@@ -202,6 +196,28 @@ var GamePlay = {
     },
 
     update: function() {
-        // this.sprCrossHair.update();
+        this.bg1.x -= BG_SPEED;
+        this.bg2.x -= BG_SPEED;
+        
+        if(this.bg1.x + this.bg1.width < 0){
+            this.bg1.x = this.bg2.x + this.bg2.width
+        }
+        if(this.bg2.x + this.bg2.width < 0){
+            this.bg2.x = this.bg1.x + this.bg1.width
+        }
+        
+        this.player.update();
+
+        this.count++;
+
+        if(this.opponent.sprite.x < -200){
+            this.opponent.destroy();
+            this.createOpponent();
+        }
+        this.opponent.update();
+
+        if(this.count % 150 == 0){
+            this.createCoins();
+        }
     }
 };

@@ -1,5 +1,5 @@
 # About
-The Darts game for awarding credits. This game must be run within an iframe.
+The Crazy Car game for awarding credits. This game must be run within an iframe.
 
 Sample:
 

@@ -34,25 +34,7 @@ EngagedNation.Config.DocumentWidth = $(document).width();
             img_traffic_car_3   : './resources/images/traffic_car_3.png',
             img_traffic_car_4   : './resources/images/traffic_car_4.png',
             img_traffic_car_5   : './resources/images/traffic_car_5.png',
-            
-            gameplay_darts       : 10,
-            gameplay_start_score : 0,
-
-            text_score   : 'SCORE',
-            text_darts   : 'DARTS',
-
-
-            gameplay_ring_a_score: 1,
-            gameplay_ring_b_score: 2,
-            gameplay_ring_c_score: 3,
-            gameplay_ring_d_score: 4,
-            gameplay_ring_e_score: 5,
-            gameplay_ring_f_score: 6,
-            gameplay_ring_g_score: 7,
-            gameplay_ring_h_score: 8,
-            gameplay_ring_i_score: 9,
-            gameplay_ring_j_score: 10,
-            
+                        
             gameplay_horizontal_score_display: true,
             gameplay_vertical_score_display: true,
             gameplay_always_win_mode: true,
