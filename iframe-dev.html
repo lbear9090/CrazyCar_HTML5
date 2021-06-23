@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui" />
+    <meta name="msapplication-tap-highlight" content="no"/>
+</head>
+<body style="margin: 0;">
+<iframe id="game-html-iframe" src="index-dev.html" width="100%" data-width="1920" height="1080" data-height="1080" frameborder="0"></iframe>
+</body>
+<script type="text/javascript" src="libs/jquery-3.2.1.min.js"></script>
+<script>
+    (
+        function($) {
+            let $iframeElement = $('#game-html-iframe'),
+                iframeResized = false,
+                windowResizedId = null;
+
+            $iframeElement.attr('height', $(window).height());
+
+            function resizeIframe(height, controlled) {
+                if (iframeResized) return;
+                iframeResized = true;
+
+                var windowWidth = $(window).width(),
+                    windowHeight = $(window).height(),
+                    iframeWidth = parseInt($iframeElement.attr('data-width')),
+                    iframeHeight = parseInt($iframeElement.attr('data-height'));
+
+                $iframeElement[0].contentWindow.postMessage(
+                    {
+                        resize: {
+                            parent_width: windowWidth,
+                            parent_height: windowHeight
+                        }
+                    },
+                    '*'
+                );
+
+                if (
+                    controlled &&
+                    height < (windowHeight - 50)
+                ) {
+                    $iframeElement.attr(
+                        {
+                            height: height
+                        }
+                    );
+
+                    // This will allow the game to resize again when the user decided to switch between portrait and landscape or just resizing the browser.
+                    setTimeout(
+                        function() {
+                            iframeResized = false;
+                        },
+                        300
+                    );
+
+                    return;
+                }
+
+                var ratio = (iframeHeight / iframeWidth) * windowWidth;
+
+                if (iframeWidth > windowWidth) {
+                    $iframeElement.attr(
+                        {
+                            width: windowWidth,
+                            height: ratio
+                        }
+                    );
+                }
+
+                if (
+                    iframeHeight > windowHeight
+                ) {
+                    $iframeElement.attr('height', windowHeight);
+                }
+
+                if (ratio > windowHeight) {
+                    $iframeElement.attr('height', windowHeight);
+                }
+
+                // This will allow the game to resize again when the user decided to switch between portrait and landscape or just resizing the browser.
+                setTimeout(
+                    function() {
+                        iframeResized = false;
+                    },
+                    300
+                );
+            }
+
+            $(window).on(
+                'message',
+                function(event) {
+                    let eventData = event.originalEvent.data;
+
+                    if (!eventData.hasOwnProperty('game')) {
+                        return;
+                    }
+
+                    if (
+                        eventData.game.hasOwnProperty('status') &&
+                        eventData.game.status === 'configuration-ready'
+                    ) {
+                        $iframeElement[0].contentWindow.postMessage(
+                            {
+                                en_game_config: {
+                                    
+
+                                    gameplay_horizontal_score_display: true,
+                                    gameplay_vertical_score_display: true,
+                                    gameplay_always_win_mode: true,
+                                    gameplay_header_visible: true,
+                                }
+                            },
+                            '*'
+                        );
+                        return;
+                    }
+
+                    if (
+                        eventData.game.hasOwnProperty('status') &&
+                        eventData.game.status === 'complete'
+                    ) {
+                        console.log(eventData.game);
+                        return;
+                    }
+
+                    /**
+                     * Resize iframe container based on the game size
+                     */
+                    if (eventData.game.hasOwnProperty('resize')) {
+                        if (eventData.game.resize.hasOwnProperty('height')) {
+                            resizeIframe(eventData.game.resize.height, eventData.game.resize.controlled);
+                            return;
+                        }
+                    }
+
+                    if (eventData.game.hasOwnProperty('status')) {
+                        console.log(eventData.game.status);
+                    }
+                }
+            );
+
+            $(window).resize(
+                function () {
+                    clearTimeout(windowResizedId);
+
+                    windowResizedId = setTimeout(
+                        function() {
+                            resizeIframe();
+                        },
+                        250
+                    );
+                }
+            );
+
+        }(jQuery)
+    )
+</script>
+</html>

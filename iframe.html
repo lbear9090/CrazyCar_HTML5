@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui" />
+        <meta name="msapplication-tap-highlight" content="no"/>
+    </head>
+    <body style="margin: 0; overflow: hidden;">
+        <iframe id="game-html-iframe" src="index.html" width="100%" height="500" frameborder="0"></iframe>
+    </body>
+    <script src="libs/jquery.min.js" type="text/javascript"></script>
+    <script>
+        (
+            function($) {
+                let documentHeight = $(document).height(),
+                    $iframeElement = $('#game-html-iframe');
+
+                $iframeElement.attr('height', documentHeight);
+
+                $(window).on(
+                    'message',
+                    function(event) {
+                        let eventData = event.originalEvent.data;
+
+                        if (!eventData.hasOwnProperty('game')) {
+                            return;
+                        }
+
+                        if (
+                            eventData.game.hasOwnProperty('status') &&
+                            eventData.game.status === 'configuration-ready'
+                        ) {
+                            $iframeElement[0].contentWindow.postMessage(
+                                {
+                                    en_game_config: {
+                                        
+                                        gameplay_horizontal_score_display: true,
+                                        gameplay_vertical_score_display: true,
+                                        gameplay_always_win_mode: true,
+                                        gameplay_header_visible: true,
+                                    }
+                                },
+                                '*'
+                            );
+                            return;
+                        }
+
+                        if (
+                            eventData.game.hasOwnProperty('status') &&
+                            eventData.game.status === 'complete'
+                        ) {
+                            alert('Score : ' + eventData.game.score);
+                            return;
+                        }
+
+                        /**
+                         * Resize iframe container based on the game size
+                         */
+                        if (eventData.game.hasOwnProperty('resize')) {
+                            if (eventData.game.resize.hasOwnProperty('height')) {
+                                $iframeElement.attr('height', eventData.game.resize.height);
+                                return;
+                            }
+                        }
+
+                        if (eventData.game.hasOwnProperty('status')) {
+                            console.log(eventData.game.status);
+                        }
+                    }
+                );
+
+            }(jQuery)
+        )
+    </script>
+</html>
