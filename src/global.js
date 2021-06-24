@@ -1,5 +1,5 @@
 var CANVAS_WIDTH = 1280;
-var CANVAS_HEIGHT = 920;
+var CANVAS_HEIGHT = 720;
 
 var BG_SPEED = 10;
 var CAR_SPEED = 5;

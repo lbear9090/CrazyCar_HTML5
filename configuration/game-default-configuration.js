@@ -65,7 +65,7 @@ EngagedNation.Config.DocumentWidth = $(document).width();
             gameplay_opponent5_width: 165,
             gameplay_opponent5_height: 71,
 
-            gameplay_ground_level_y_coordinate: 700,
+            gameplay_ground_level_y_coordinate: 500,
 
             parent_width: (typeof window.screen.availWidth === 'undefined' && window.screen.availWidth > 0) ? window.screen.availWidth : $(window).width(),
             parent_height: (typeof window.screen.availHeight === 'undefined' && window.screen.availHeight > 0) ? window.screen.availHeight : $(window).height()
