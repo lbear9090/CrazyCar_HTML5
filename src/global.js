@@ -1,10 +1,10 @@
-var CANVAS_WIDTH = 1920;
-var CANVAS_HEIGHT = 1080;
+var CANVAS_WIDTH = 1280;
+var CANVAS_HEIGHT = 920;
 
 var BG_SPEED = 10;
 var CAR_SPEED = 5;
-var JUMP_POWER = 30;
-var GRAVITY = 1;
+var JUMP_POWER = 15;
+var GRAVITY = 0.5;
 var s_aSounds;
 
 var CH_STATUS_PAUSE = 0;

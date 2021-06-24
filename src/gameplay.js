@@ -1,11 +1,14 @@
-var GAMEPLAY_STATUS_CROSSHAIR = 0;
-var GAMEPLAY_STATUS_DART = 1;
+var GAMEPLAY_STATUS_START = 0;
+var GAMEPLAY_STATUS_PLAY = 1;
 var GAMEPLAY_GAMEOVER = 2;
 
 var GamePlay = {
     game: controller.game,
-    status: GAMEPLAY_STATUS_CROSSHAIR,
-
+    status: GAMEPLAY_STATUS_START,
+    jump: 0,
+    score: 0,
+    level: 1,
+    
     init: function() {
         this.game.renderer.renderSession.roundPixels = true;
         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -20,6 +23,7 @@ var GamePlay = {
         // create ui
         this.createUI();
         this.count = 0;
+        this.bgSpeed = BG_SPEED;
     },
 
     createUI: function() {
@@ -40,50 +44,27 @@ var GamePlay = {
         if (this.game.device.touch)
             this.game.input.mouse.stop();
 
-        newSprite('framestars', 10, 10, 0, 0, 1, this.group, this.game);
-        newSprite('framescore', CANVAS_WIDTH/2, 10, 0.5, 0, 1, this.group, this.game);
+        var sStar = newSprite('framestars', 10, 10, 0, 0, 1, this.group, this.game);
+        var sScore = newSprite('framescore', CANVAS_WIDTH/2, 10, 0.5, 0, 1, this.group, this.game);
         
         this.isSoundOn = readGameData('sound', 1);
         if (this.isSoundOn == 0) {
-            this.btnSound = newButton('btn_sound', 1800, 10, 0.5, 0, 5, this.onClickSound, this, this.group, this.game, false, null, 1, 1, 0);
+            this.btnSound = newButton('btn_sound', 1200, 10, 0.5, 0, 5, this.onClickSound, this, this.group, this.game, false, null, 1, 1, 0);
         } else {
-            this.btnSound = newButton('btn_sound', 1800, 10, 0.5, 0, 5, this.onClickSound, this, this.group, this.game, false, null, 0, 0, 1);
+            this.btnSound = newButton('btn_sound', 1200, 10, 0.5, 0, 5, this.onClickSound, this, this.group, this.game, false, null, 0, 0, 1);
         }
 
-        this.player = new Player(400, 800, this.group, this.game, this.onDartFinished, this);
-
+        this.lblLevel = newLabel('1', 40, 'codystar', 'lightgreen', 60, 60, 0.5, 0.5, 1, this.group, this.game, false, true, sStar);
+        this.lblJump = newLabel('0/10', 40, 'codystar', 'lightgreen', 200, 50, 0.5, 0.5, 1, this.group, this.game, false, true, sStar);
+        this.lblScore = newLabel('0', 40, 'codystar', 'lightgreen', 160, 50, 0.5, 0.5, 1, this.group, this.game, false, true, sScore);
+        this.player = new Player(350, 650, this.group, this.game, this);
+        
         this.createOpponent();
-        // header
-        // var sprHeader = newSprite('header', 0, 15, 0, 0, 1, this.group, this.game);
-        // newLabel(EngagedNation.Config.Game.text_score, 40, 'Arial', 'black', 196, 40, 0.5, 0.5, 1, this.group, this.game, false, true, sprHeader);
-        // newLabel(EngagedNation.Config.Game.text_darts, 40, 'Arial', 'black', 800, 40, 0.5, 0.5, 1, this.group, this.game, false, true, sprHeader);
-        // this.lblScore = newLabel('000', 50, EngagedNation.Config.Game.text_font, '#9a0000', 433, 35, 0.5, 0.5, 1, this.group, this.game, false, true, sprHeader);
-        // this.lblDarts = newLabel('00', 50, EngagedNation.Config.Game.text_font, '#9a0000', 958, 35, 0.5, 0.5, 1, this.group, this.game, false, true, sprHeader);
-        // this.score = 0;
-        // this.cnt_darts = EngagedNation.Config.Game.gameplay_darts + 1;
-        // this.addScore(EngagedNation.Config.Game.gameplay_start_score);
-        // this.removeDarts(0);
-        // if (!EngagedNation.Config.Game.gameplay_header_visible) {
-        //     sprHeader.visible = false;
-        // }
-
-        
-        // this.btnHelp = newButton('btn_help', 1140, 50, 0.5, 0.5, 5, this.onClickHelp, this, this.group, this.game, false, null, 0, 0, 1);
-        // // target
-        // this.sprTarget = newSprite('dashboard', 640, 360, 0.5, 0.5, 1, this.group, this.game);
-        
-        // // crosshair
-        // this.sprCrossHair = new CrossHair(1110, 550, this.group, this.game, 5);
-
-        // this.dlgInstruction = newSprite('instruction', CANVAS_WIDTH/2, CANVAS_HEIGHT/2, 0.5, 0.5, 10, this.group, this.game);
-        // newButton('btn_close', 698, 80, 0.5, 0.5, 5, this.onClickClose, this, this.group, this.game, true, this.dlgInstruction, 0, 0, 1);
-        // this.dlgInstruction.visible = false;
+        this.createCoins();
 
         playSound('audio_game_music', 0.1, true);
         Howler.mute(1-this.isSoundOn);
-
-        // this.showRingScoreValues();
-        // this.sort();
+        this.sort();
     },
 
     onClickSound: function() {
@@ -112,74 +93,33 @@ var GamePlay = {
     },
     
     onTap: function() {
-        this.player.jump();
-        // if ( this.dlgInstruction.visible ) return;
-        // if (this.cnt_darts == 0 || this.status !== GAMEPLAY_STATUS_CROSSHAIR) return;
-
-        // if (this.sprCrossHair.takeValue()) {
-        //     var temp = this.sprCrossHair.getValue();
-
-        //     var x = temp.x,
-        //         y = temp.y;
-
-        //     this.direct_x = Math.round(x);
-        //     this.direct_y = Math.round(y);
-        //     if (EngagedNation.Config.Game.gameplay_always_win_mode) {
-        //         var len = Math.sqrt(x*x + y*y);
-        //         if (len >= 9.5) {
-        //             x = x/len*9.4;
-        //             y = y/len*9.4;
-        //             this.direct_x = Math.round(x);
-        //             this.direct_y = Math.round(y);
-        //         }
-        //     }
-            
-        //     this.setStatus(GAMEPLAY_STATUS_DART);
-        //     new Dart(CANVAS_WIDTH/2+x*TARGET_WIDTH/20, CANVAS_HEIGHT/2-y*TARGET_HEIGHT/20, this.group, this.game, this.onDartFinished, this);
-        // }
+        if(this.status == GAMEPLAY_STATUS_START){
+            this.setStatus(GAMEPLAY_STATUS_PLAY);
+            this.player.playAnim(true);
+        }
+        else if(this.status == GAMEPLAY_STATUS_PLAY){
+            this.player.jump();
+        }
     },
     
-    addScore: function(score) {
-        this.score += score;
-        var str = '00000'+this.score;
-        this.lblScore.text = str.substr(-5);
-    },
-
-    removeDarts: function() {
-        this.cnt_darts--;
-        var str = '000'+this.cnt_darts;
-        this.lblDarts.text = str.substr(-2);
-        return this.cnt_darts == 0;
-    },
-
-    onDartFinished: function() {
-        // var score = Math.round(Math.sqrt(this.direct_x*this.direct_x+this.direct_y*this.direct_y));
-        // score = score < 10 ? this.ringScores[score] : 0;
-        // this.addScore(score);
-        // this.sort();
-
-        // if (this.removeDarts()) {
-        //     this.setStatus(GAMEPLAY_GAMEOVER);
-        //     return;
-        // }
-        // this.setStatus(GAMEPLAY_STATUS_CROSSHAIR);
-    },
-
     createOpponent: function(){
-        this.opponent = new Opponent(CANVAS_WIDTH + 200, 800, this.group, this.game, this.onDartFinished, this);
+        this.opponent = new Opponent(CANVAS_WIDTH + 200, 650, this.group, this.game, this);
+        this.sort();
     },
 
-    createCoins: function(){
-
+    createCoins: function(){   
+        this.coins = [];
+        for(i = 0; i < 5; i++){
+            this.coins[i] = new Coin(CANVAS_WIDTH + 500 + i * 50, 630, this.group, this.game, this);
+        }
     },
 
     setStatus: function(status)     {
         this.status = status;
         switch (status) {
-            case GAMEPLAY_STATUS_CROSSHAIR:
-                this.sprCrossHair.start();
+            case GAMEPLAY_STATUS_START:
                 break;
-            case GAMEPLAY_STATUS_DART:
+            case GAMEPLAY_STATUS_PLAY:
                 break;
             case GAMEPLAY_GAMEOVER:
                 this.gameOver();
@@ -188,7 +128,7 @@ var GamePlay = {
     },
 
     gameOver: function() {
-        playSound('audio_game_over', 1, false);
+        // playSound('audio_game_over', 1, false);
         $(controller).trigger('post_message', {
             status: 'complete',
             score: this.score
@@ -196,8 +136,11 @@ var GamePlay = {
     },
 
     update: function() {
-        this.bg1.x -= BG_SPEED;
-        this.bg2.x -= BG_SPEED;
+        if(this.status == GAMEPLAY_STATUS_START || this.status == GAMEPLAY_GAMEOVER)
+            return;
+
+        this.bg1.x -= this.bgSpeed;
+        this.bg2.x -= this.bgSpeed;
         
         if(this.bg1.x + this.bg1.width < 0){
             this.bg1.x = this.bg2.x + this.bg2.width
@@ -210,14 +153,49 @@ var GamePlay = {
 
         this.count++;
 
-        if(this.opponent.sprite.x < -200){
+        if(this.opponent.sprite.x < -(160 + (Math.random() * 150))){
             this.opponent.destroy();
+            this.jump++;
+            
+            if(this.jump == this.level * 10){
+                this.level++;
+                this.jump = 0;
+                this.bgSpeed = BG_SPEED + ((this.level - 1) * 5)
+            }
+
+            this.lblJump.text = this.jump + "/" + (this.level*10);
+            this.lblLevel.text = this.level;
+
             this.createOpponent();
         }
-        this.opponent.update();
+        this.opponent.update(this.bgSpeed);
 
-        if(this.count % 150 == 0){
+        if(this.checkOverlap(this.player.sprite, this.opponent.sprite)){
+            this.player.playAnim(false);
+            this.setStatus(GAMEPLAY_GAMEOVER);
+        }
+
+        if(this.count % 600 == 0){
+            for(i = 0; i < 5; i++){
+                this.coins[i].destroy();
+            }
             this.createCoins();
         }
+        
+        for(i = 0; i < 5; i++){
+            this.coins[i].update(this.bgSpeed);
+            if(this.coins[i].sprite.visible && this.checkOverlap(this.player.sprite, this.coins[i].sprite)){
+                this.score += 10;
+                this.lblScore.text = this.score;
+                this.coins[i].sprite.visible = false;
+            }
+        }        
+    },
+
+    checkOverlap: function (spriteA, spriteB) {
+        var boundsA = spriteA.getBounds();
+        var boundsB = spriteB.getBounds();
+    
+        return Phaser.Rectangle.intersects(boundsA, boundsB);
     }
 };
