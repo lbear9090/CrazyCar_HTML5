@@ -3,7 +3,7 @@ var Coin = function(posX, posY, _group, _game, _cb_owner) {
     this.posY = posY;
     this.game = _game;
     
-    this.sprite = newSprite('coin', posX, posY, 0.5, 0.5, 1, _group, _game);
+    this.sprite = newSprite('coin', posX, posY, 0.5, 1, 1, _group, _game);
     this.anim = this.sprite.animations.add('selected');
     this.anim.loop = true;
     this.anim.play(20);

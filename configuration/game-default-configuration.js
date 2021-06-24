@@ -35,12 +35,37 @@ EngagedNation.Config.DocumentWidth = $(document).width();
             img_traffic_car_4   : './resources/images/traffic_car_4.png',
             img_traffic_car_5   : './resources/images/traffic_car_5.png',
                         
-            gameplay_horizontal_score_display: true,
-            gameplay_vertical_score_display: true,
-            gameplay_always_win_mode: true,
-            gameplay_header_visible: true,
+            gameplay_level_font : 'digital',
+            gameplay_level_font_size: 40,
+            gameplay_level_font_color: 'lightgreen',
 
-            text_font: 'digital',
+            gameplay_jump_font : 'digital',
+            gameplay_jump_font_size: 40,
+            gameplay_jump_font_color: 'lightgreen',
+
+            gameplay_score_font : 'digital',
+            gameplay_score_font_size: 40,
+            gameplay_score_font_color: 'lightgreen',
+
+            gameplay_player_width: 172,
+            gameplay_player_height: 73,
+
+            gameplay_opponent1_width: 167,
+            gameplay_opponent1_height: 67,
+            
+            gameplay_opponent2_width: 165,
+            gameplay_opponent2_height: 65,
+
+            gameplay_opponent3_width: 150,
+            gameplay_opponent3_height: 67,
+
+            gameplay_opponent4_width: 166,
+            gameplay_opponent4_height: 67,
+
+            gameplay_opponent5_width: 165,
+            gameplay_opponent5_height: 71,
+
+            gameplay_ground_level_y_coordinate: 700,
 
             parent_width: (typeof window.screen.availWidth === 'undefined' && window.screen.availWidth > 0) ? window.screen.availWidth : $(window).width(),
             parent_height: (typeof window.screen.availHeight === 'undefined' && window.screen.availHeight > 0) ? window.screen.availHeight : $(window).height()

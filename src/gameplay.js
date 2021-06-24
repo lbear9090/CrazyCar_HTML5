@@ -55,10 +55,11 @@ var GamePlay = {
             this.btnSound = newButton('btn_sound', 1200, 10, 0.5, 0, 5, this.onClickSound, this, this.group, this.game, false, null, 0, 0, 1);
         }
 
-        this.lblLevel = newLabel('1', 40, 'codystar', 'lightgreen', 60, 60, 0.5, 0.5, 1, this.group, this.game, false, true, sStar);
-        this.lblJump = newLabel('0/10', 40, 'codystar', 'lightgreen', 200, 50, 0.5, 0.5, 1, this.group, this.game, false, true, sStar);
-        this.lblScore = newLabel('0', 40, 'codystar', 'lightgreen', 160, 50, 0.5, 0.5, 1, this.group, this.game, false, true, sScore);
-        this.player = new Player(350, 650, this.group, this.game, this);
+        this.lblLevel = newLabel('1', EngagedNation.Config.Game.gameplay_level_font_size, EngagedNation.Config.Game.gameplay_level_font, EngagedNation.Config.Game.gameplay_level_font_color, 60, 60, 0.5, 0.5, 1, this.group, this.game, false, true, sStar);
+        this.lblJump = newLabel('0/10', EngagedNation.Config.Game.gameplay_jump_font_size, EngagedNation.Config.Game.gameplay_jump_font, EngagedNation.Config.Game.gameplay_jump_font_color, 200, 50, 0.5, 0.5, 1, this.group, this.game, false, true, sStar);
+        this.lblScore = newLabel('0', EngagedNation.Config.Game.gameplay_score_font_size, EngagedNation.Config.Game.gameplay_score_font, EngagedNation.Config.Game.gameplay_score_font_color, 160, 50, 0.5, 0.5, 1, this.group, this.game, false, true, sScore);
+
+        this.player = new Player(350, EngagedNation.Config.Game.gameplay_ground_level_y_coordinate, this.group, this.game, this);
         
         this.createOpponent();
         this.createCoins();
@@ -106,14 +107,14 @@ var GamePlay = {
     },
     
     createOpponent: function(){
-        this.opponent = new Opponent(CANVAS_WIDTH + 200, 650, this.group, this.game, this);
+        this.opponent = new Opponent(CANVAS_WIDTH + 200, EngagedNation.Config.Game.gameplay_ground_level_y_coordinate, this.group, this.game, this);
         this.sort();
     },
 
     createCoins: function(){   
         this.coins = [];
         for(i = 0; i < 5; i++){
-            this.coins[i] = new Coin(CANVAS_WIDTH + 500 + i * 50, 630, this.group, this.game, this);
+            this.coins[i] = new Coin(CANVAS_WIDTH + 500 + i * 50, EngagedNation.Config.Game.gameplay_ground_level_y_coordinate-20, this.group, this.game, this);
         }
     },
 

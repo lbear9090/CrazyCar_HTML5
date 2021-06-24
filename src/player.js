@@ -5,7 +5,7 @@ var Player = function(posX, posY, _group, _game, _cb_owner) {
     this.speedY = 0;
     this.jumpCnt = 0;
 
-    this.sprite = newSprite('playercar_red', posX, posY, 0.5, 0.5, 2, _group, _game);
+    this.sprite = newSprite('playercar_red', posX, posY, 0.5, 1, 2, _group, _game);
     this.anim = this.sprite.animations.add('selected');
     this.anim.loop = true;
     var me = this;
