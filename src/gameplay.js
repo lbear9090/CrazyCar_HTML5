@@ -41,6 +41,7 @@ var GamePlay = {
         this.bg2.input.priorityID = 0;
         this.bg2.events.onInputDown.add(this.onTap, this);
 
+        this.sStart = newSprite('touchtostart',  CANVAS_WIDTH/2, CANVAS_HEIGHT/2, 0.5, 0.5, 2, this.group, this.game);
         if (this.game.device.touch)
             this.game.input.mouse.stop();
 
@@ -62,7 +63,6 @@ var GamePlay = {
         this.createOpponent();
         this.createCoins();
 
-        playSound('audio_game_music', 0.1, true);
         Howler.mute(1-this.isSoundOn);
         this.sort();
     },
@@ -96,8 +96,11 @@ var GamePlay = {
         if(this.status == GAMEPLAY_STATUS_START){
             this.setStatus(GAMEPLAY_STATUS_PLAY);
             this.player.playAnim(true);
+            playSound('audio_game_music', 0.1, true);
+            this.sStart.visible = false;
         }
         else if(this.status == GAMEPLAY_STATUS_PLAY){
+            playSound('audio_jump');
             this.player.jump();
         }
     },
@@ -172,6 +175,8 @@ var GamePlay = {
 
         if(this.checkOverlap(this.player.sprite, this.opponent.sprite)){
             this.player.playAnim(false);
+            playSound('audio_crash');
+            playSound('audio_gameover');
             this.setStatus(GAMEPLAY_GAMEOVER);
         }
 
@@ -186,6 +191,7 @@ var GamePlay = {
             this.coins[i].update(this.bgSpeed);
             if(this.coins[i].sprite.visible && this.checkOverlap(this.player.sprite, this.coins[i].sprite)){
                 this.score += 10;
+                playSound('audio_coin');
                 this.lblScore.text = this.score;
                 this.coins[i].sprite.visible = false;
             }

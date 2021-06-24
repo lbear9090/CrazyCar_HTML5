@@ -59,7 +59,7 @@ var Preload = {
         for(var i=0; i<aSoundsInfo.length; i++){
             s_aSounds[aSoundsInfo[i].ingamename] = 
                 new Howl({ 
-                    src: [aSoundsInfo[i].filename+'.m4a', aSoundsInfo[i].path+aSoundsInfo[i].filename+'.ogg'],
+                    src: [aSoundsInfo[i].filename+'.mp3', aSoundsInfo[i].path+aSoundsInfo[i].filename+'.ogg'],
                     autoplay: false,
                     preload: true,
                     loop: aSoundsInfo[i].loop, 
