@@ -18,7 +18,7 @@ var Preload = {
     create: function() {
         this.game.stage.backgroundColor = 'black';
         this.group = this.game.add.group();
-        this.lblProgress = newLabel('', 20, EngagedNation.Config.Game.text_font, 'white', CANVAS_WIDTH/2, CANVAS_HEIGHT/2, 0.5, 0.5, 1, this.group, this.game);
+        this.lblProgress = newLabel('', 20, "Arial", 'white', CANVAS_WIDTH/2, CANVAS_HEIGHT/2, 0.5, 0.5, 1, this.group, this.game);
 
         this.game.load.onLoadStart.add(this.loadStart, this);
         this.game.load.onFileComplete.add(this.fileComplete, this);

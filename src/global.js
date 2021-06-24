@@ -1,25 +1,13 @@
 var CANVAS_WIDTH = 1280;
 var CANVAS_HEIGHT = 720;
 
-var BG_SPEED = 10;
-var CAR_SPEED = 5;
+var BG_SPEED = 6;
+var CAR_SPEED = 7;
 var JUMP_POWER = 15;
 var GRAVITY = 0.5;
 var s_aSounds;
 
-var CH_STATUS_PAUSE = 0;
-var CH_STATUS_HORIZONTAL = 1;
-var CH_STATUS_VERTICAL = 2;
-var CH_STATUS_HOLD = 3;
-var CH_CENTER_POS_X = 114.5;
-var CH_CENTER_POS_Y = 114.5;
-var CH_ROAD_WIDTH = 229;
-var CH_ROAD_HEIGHT = 229;
-var CH_SPEED = 7;
 var s_bIsIphone = false;
-
-var TARGET_WIDTH = 430;
-var TARGET_HEIGHT = 430;
 
 var convertToNodeSpace = function(pos_x, pos_y, parent) {
     // lc = left_corner
